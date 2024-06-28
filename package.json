@@ -12,6 +12,7 @@
     "express": "^4.19.2",
     "express-cache-headers": "^0.1.4",
     "graphql": "^16.9.0",
-    "graphql-request": "6.1.0"
+    "graphql-request": "6.1.0",
+    "merkletreejs": "^0.3.11"
   }
 }

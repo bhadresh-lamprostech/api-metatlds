@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "TldFactory",
-  "address": "0xf98D3Fe747e1bBEF23E0830caE6efc2C304fFDDE",
+  "address": "0x3155755b79aA083bd953911C92705B7aA82a18F9",
   "sourceName": "contracts/admin/TldFactory.sol",
   "abi": [
     {

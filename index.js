@@ -3,6 +3,7 @@ const express = require("express");
 const { ethers } = require("ethers");
 const RegistrarControllar = require("./artifacts/RegistrarControllar.json");
 const tldFactoryAbi = require("./artifacts/TldFactory.json");
+const { root, generateProof } = require('./merkleProof');
 
 const { GraphQLClient, gql } = require("graphql-request");
 const cors = require("cors");
@@ -106,14 +107,29 @@ app.get("/check-availability/:name", async (req, res) => {
 //   try {
 //     const { name } = req.params;
 
-//     const getAvailablity = await contractldFactory.checkAvailability();
+//     // Convert name to bytes32
+//     const nameBytes32 = ethers.utils.formatBytes32String(name);
 
-//     res.json(results);
+//     // Generate Merkle proof (ensure it returns an array of bytes32)
+//     const merkleProof = generateProof(name);
+
+//     // Ensure merkleProof is an array of bytes32
+//     const formattedProof = merkleProof.map(proof => ethers.utils.arrayify(proof));
+
+//     const getAvailability = await tldFactory.checkAvailability(nameBytes32, formattedProof);
+
+//     if (getAvailability) {
+//       res.json(await getAvailability.wait());
+//     } else {
+//       console.log("TLD is not available...");
+//       res.json({ available: false });
+//     }
 //   } catch (error) {
 //     console.error("Error processing request:", error);
 //     res.status(500).json({ error: error.message });
 //   }
 // });
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
