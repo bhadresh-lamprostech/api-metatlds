@@ -4,7 +4,6 @@ const { ethers } = require("ethers");
 const RegistrarControllar = require("./artifacts/RegistrarControllar.json");
 const tldFactoryAbi = require("./artifacts/TldFactory.json");
 const { root, generateProof } = require('./merkleProof');
-
 const { GraphQLClient, gql } = require("graphql-request");
 const cors = require("cors");
 const app = express();
@@ -17,6 +16,8 @@ app.use(
   })
 );
 
+
+
 const providerUrl = process.env.ALCHEMY_PROVIDER_API_URL;
 const graphqlEndpoint = process.env.GRPAHQL_API_ENDPOINT;
 
@@ -27,11 +28,11 @@ const contract = new ethers.Contract(
   provider
 );
 
-const tldFactory = new ethers.Contract(
-  tldFactoryAbi.address,
-  tldFactoryAbi.abi,
-  provider
-);
+// const tldFactory = new ethers.Contract(
+//   tldFactoryAbi.address,
+//   tldFactoryAbi.abi,
+//   provider
+// );
 
 const query = gql`
   query MyQuery {
@@ -103,32 +104,25 @@ app.get("/check-availability/:name", async (req, res) => {
   }
 });
 
-// app.get("/check-available-tld/:name", async (req, res) => {
-//   try {
-//     const { name } = req.params;
+app.get("/check-available-tld/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const merkleProof = generateProof(name);
+    const tlds = await fetchTLDs();
+    
+    if(merkleProof.length === 0 && !tlds.some(item => item.tld == name)){
+      res.json({available : true});
+    }
+    else {
+      res.json({available: false});
+    }
 
-//     // Convert name to bytes32
-//     const nameBytes32 = ethers.utils.formatBytes32String(name);
 
-//     // Generate Merkle proof (ensure it returns an array of bytes32)
-//     const merkleProof = generateProof(name);
-
-//     // Ensure merkleProof is an array of bytes32
-//     const formattedProof = merkleProof.map(proof => ethers.utils.arrayify(proof));
-
-//     const getAvailability = await tldFactory.checkAvailability(nameBytes32, formattedProof);
-
-//     if (getAvailability) {
-//       res.json(await getAvailability.wait());
-//     } else {
-//       console.log("TLD is not available...");
-//       res.json({ available: false });
-//     }
-//   } catch (error) {
-//     console.error("Error processing request:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 
 app.listen(port, () => {
